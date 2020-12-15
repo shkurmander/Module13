@@ -5,16 +5,39 @@ namespace Ex13._6
     
     class Program
     {
-        public static (string, string, int, bool, string[], string[]) GetUserData()
+        /// <summary>
+        /// Метод заполняющий и возвращающий данные о пользователе
+        /// </summary>
+        /// <returns> объект кортежа userData </returns>
+        public static (string name, string lastName, int age, bool havePet, string[] pets, string[] favColors) GetUserData()
+        //если типизировать метод кортежем,надо делать заглушку на массив pets[](которую обрабатывать при печати)
+        //иначе ошибка на возврат переменной которой не присвоено значение
+
         {
+
+            //Метод для получения массива любимых цветов пользователя
+            //amt - количество цветов
+            static string[] GetFavColors(int amt)
+            {
+                string[] favColors = new string[amt];
+
+                for (int i = 0; i < amt; i++)
+                {
+                    favColors[i] = GetCorrectString($"Enter your {i + 1} favorite color: ");
+                }
+
+                return favColors;
+
+            }
             //Метод для получения массива кличек питомцев
+            //amt - количество питомцев
             static string[] GetPetsNames(int amt)
             {
                 string[] pets = new string[amt];
 
                 for (int i = 0; i < amt; i++)
                 {
-                    pets[i] = GetCorrectString($"Enter pet №{i + 1} name");
+                    pets[i] = GetCorrectString($"Enter pet №{i + 1} name: ");
                 }
 
                 return pets;
@@ -74,14 +97,15 @@ namespace Ex13._6
             //кортеж данных о пользователе
             (string name, string lastName, int age, bool havePet, string[] pets, string[] favColors) userData;
 
-            
-            
+                        
 
             userData.name = GetCorrectString("Enter your name: ");
             userData.lastName = GetCorrectString("Enter your last name: ");
             userData.age = GetCorrectNum("Enter your age: ", 3);
+
             //проверка на наличие питомца
             bool correct = false;
+            userData.havePet = false;
             while (!correct)
             {
 
@@ -101,20 +125,65 @@ namespace Ex13._6
                         break;
 
                     default:
+                        
                         Console.WriteLine("Incorrect value - type \"y\" or \"n\"!!!");
                         break;
                 }                 
             }
-            var numPets = GetCorrectNum("Enter the number of pets: ", 1);
+            if (userData.havePet)
+            {
+                var numPets = GetCorrectNum("Enter the number of pets: ", 1);
+                userData.pets = GetPetsNames(numPets);
+            }
+            else
+            {
+                userData.pets = null;
+            }
+           
+            var numColors = GetCorrectNum("Enter the number of your favorite colors: ", 1);
+            userData.favColors = GetFavColors(numColors);
             
-            
-
 
             return userData;
+                       
         }
+        /// <summary>
+        /// Метод печатающий данные о пользователе
+        /// </summary>
+        /// <param name="userData"> Кортеж с данными о пользователе</param>
+        static void PrintUserData((string name, string lastName, int age, bool havePet, string[] pets, string[] favColors) userData)
+        {
+            Console.Clear();
+
+            Console.WriteLine("User info:");
+
+            Console.WriteLine($"Name: {userData.name}\nLast Name: {userData.lastName}\nAge:{userData.age}");
+            Console.WriteLine("Pets list:");
+            try
+            {
+                foreach (var item in userData.pets)
+                {
+                    Console.WriteLine($"\t{item}");
+                }
+            }
+            catch 
+            {
+                Console.WriteLine("User have no pets - empty pets array!");
+            }            
+
+            Console.WriteLine("Favorite colors:");
+            foreach (var item in userData.favColors)
+            {
+                Console.WriteLine($"\t{item}");
+            }
+        }
+
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var user1 = GetUserData();
+            PrintUserData(user1);
+
+            Console.ReadKey();
         }
     }
 }
